@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f3eee4;
+  --paper-2: #ebe3d4;
+  --ink: #1b2433;
+  --ink-soft: #4a5568;
+  --stamp: #b42318;
+  --stamp-dark: #8f1c14;
+  --sage: #2c6a4a;
+  --sage-dark: #1f4d36;
+  --sand: #e6dcc8;
+  --line: #d4c8b4;
+  --card: #fffdf8;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-stamp: var(--stamp);
+  --color-stamp-dark: var(--stamp-dark);
+  --color-sage: var(--sage);
+  --color-sage-dark: var(--sage-dark);
+  --color-sand: var(--sand);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --font-sans: var(--font-source);
+  --font-display: var(--font-fraunces);
+}
+
+html {
+  background: var(--paper);
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(180, 35, 24, 0.08), transparent 50%),
+    radial-gradient(900px 400px at 110% 0%, rgba(44, 106, 74, 0.08), transparent 46%),
+    var(--paper);
+  color: var(--ink);
+  font-family: var(--font-source), "Source Sans 3", sans-serif;
+}
+
+.display {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+.paper-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(27, 36, 51, 0.04), 0 12px 32px rgba(27, 36, 51, 0.06);
+}
+
+.stamp-ring {
+  box-shadow: inset 0 0 0 2px rgba(180, 35, 24, 0.85);
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: #f3c4bf;
+}
