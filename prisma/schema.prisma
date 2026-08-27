@@ -47,6 +47,7 @@ model User {
   memberships TenantMember[]
   consents    Consent[]
   auditLogs   AuditLog[]
+  notices     InboxNotice[]
 }
 
 model TenantMember {
@@ -89,6 +90,7 @@ model Document {
 
   tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   events DocumentEvent[]
+  notices InboxNotice[]
 
   @@index([tenantId, status])
   @@index([recipientTcHash])
@@ -106,6 +108,21 @@ model DocumentEvent {
   document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([documentId])
+}
+
+model InboxNotice {
+  id         String    @id @default(cuid())
+  userId     String
+  documentId String?
+  title      String
+  body       String
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([userId, readAt])
 }
 
 model Consent {

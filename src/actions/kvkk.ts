@@ -35,7 +35,18 @@ export async function exportMyDataAction() {
       status: doc.status,
       receivedAt: doc.receivedAt,
       deliveredAt: doc.deliveredAt,
+      notifiedAt: doc.notifiedAt,
       office: doc.office,
+    })),
+    notices: (
+      await prisma.inboxNotice.findMany({
+        where: { userId: ctx.user.id },
+        select: { title: true, body: true, createdAt: true },
+      })
+    ).map((n) => ({
+      title: n.title,
+      body: n.body,
+      createdAt: n.createdAt,
     })),
   };
 }
@@ -45,6 +56,7 @@ export async function deleteMyAccountAction() {
   const now = new Date();
 
   await prisma.$transaction([
+    prisma.inboxNotice.deleteMany({ where: { userId: ctx.user.id } }),
     prisma.document.updateMany({
       where: { recipientTcHash: ctx.user.tcHash ?? undefined },
       data: {

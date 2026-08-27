@@ -19,6 +19,7 @@ const AHMET_TC = "10000000146";
 const ELIF_TC = "12345678950";
 
 async function main() {
+  await prisma.inboxNotice.deleteMany();
   await prisma.documentEvent.deleteMany();
   await prisma.document.deleteMany();
   await prisma.auditLog.deleteMany();
@@ -127,7 +128,7 @@ async function main() {
   });
 
   const now = new Date();
-  await prisma.document.create({
+  const demoReady = await prisma.document.create({
     data: {
       tenantId: caddebostan.id,
       trackingCode: "EVK-26DEMO1",
@@ -147,6 +148,15 @@ async function main() {
           { actorId: muhtar.id, action: "status.ready", note: "Teslime hazır" },
         ],
       },
+    },
+  });
+
+  await prisma.inboxNotice.create({
+    data: {
+      userId: ahmet.id,
+      documentId: demoReady.id,
+      title: "Evrakınız teslime hazır",
+      body: `${caddebostan.name} sizi bekliyor. Tel: ${caddebostan.phone}. Takip: EVK-26DEMO1`,
     },
   });
 

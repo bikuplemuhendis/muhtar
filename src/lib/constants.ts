@@ -9,7 +9,9 @@ export const SESSION_DAYS = 12;
 
 export const DEMO_CREDENTIALS = {
   muhtar: { email: "muhtar@caddebostan.ornek", password: "Teslim123!" },
+  personel: { email: "personel@caddebostan.ornek", password: "Teslim123!" },
   vatandas: { email: "ahmet@ornek.com", password: "Teslim123!" },
+  alsancak: { email: "muhtar@alsancak.ornek", password: "Teslim123!" },
 } as const;
 
 export const ROLES = {

@@ -88,7 +88,10 @@ export async function createDocumentAction(
   redirect(`/ofis/evrak/${doc.id}?yeni=1`);
 }
 
-export async function changeStatusAction(formData: FormData): Promise<void> {
+export async function changeStatusAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const ctx = await requireOffice();
   const documentId = str(formData, "documentId");
   const nextStatus = str(formData, "status") as DocumentStatus;
@@ -96,15 +99,15 @@ export async function changeStatusAction(formData: FormData): Promise<void> {
   const notify = str(formData, "notify") === "on";
 
   const doc = await getTenantDocument(ctx.tenant.id, documentId);
-  if (!doc) throw new Error("Evrak bulunamadı");
+  if (!doc) return { error: "Evrak bulunamadı." };
   assertTenantScope(ctx.tenant.id, doc.tenantId);
 
   if (!canTransition(doc.status as DocumentStatus, nextStatus)) {
-    throw new Error("Bu durum geçişi yapılamaz");
+    return { error: "Bu durum geçişi yapılamaz." };
   }
 
   if (nextStatus === STATUSES.DELIVERED && !identityChecked && !doc.identityChecked) {
-    throw new Error("Teslim için kimlik kontrolü işaretlenmelidir");
+    return { error: "Teslim için kimlik kontrolü işaretlenmelidir." };
   }
 
   const now = new Date();
@@ -134,6 +137,26 @@ export async function changeStatusAction(formData: FormData): Promise<void> {
     },
   });
 
+  if (nextStatus === STATUSES.READY && notify) {
+    const citizen = await prisma.user.findFirst({
+      where: {
+        tcHash: doc.recipientTcHash,
+        role: "CITIZEN",
+        anonymizedAt: null,
+      },
+    });
+    if (citizen) {
+      await prisma.inboxNotice.create({
+        data: {
+          userId: citizen.id,
+          documentId: doc.id,
+          title: "Evrakınız teslime hazır",
+          body: `${ctx.tenant.name} sizi bekliyor. Tel: ${ctx.tenant.phone}. Takip: ${doc.trackingCode}`,
+        },
+      });
+    }
+  }
+
   await writeAudit({
     action: `document.${nextStatus.toLowerCase()}`,
     entity: "document",
@@ -147,4 +170,6 @@ export async function changeStatusAction(formData: FormData): Promise<void> {
   revalidatePath("/ofis");
   revalidatePath(`/ofis/evrak/${doc.id}`);
   revalidatePath("/ofis/teslim");
+  revalidatePath("/hesabim");
+  return { ok: true };
 }

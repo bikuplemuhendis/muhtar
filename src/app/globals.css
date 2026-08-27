@@ -118,3 +118,15 @@ textarea {
   height: 0;
   width: 0;
 }
+
+@media print {
+  header,
+  nav,
+  .no-print,
+  footer {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+}

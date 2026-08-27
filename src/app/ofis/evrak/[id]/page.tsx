@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CopyButton } from "@/components/copy-button";
+import { PrintButton } from "@/components/print-button";
 import { StatusActions } from "@/components/status-actions";
 import { StatusTimeline } from "@/components/status-timeline";
 import { TrackingSlip } from "@/components/tracking-slip";
@@ -49,12 +50,13 @@ export default async function DocumentDetailPage({
         rotate={false}
       />
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2 no-print">
         <CopyButton value={doc.trackingCode} label="Kodu kopyala" />
         <CopyButton
           value={`${doc.trackingCode} — ${ctx.tenant.name} ${ctx.tenant.phone}`}
           label="Fiş metni"
         />
+        <PrintButton />
       </div>
 
       <section className="paper-card rounded-[28px] p-4">

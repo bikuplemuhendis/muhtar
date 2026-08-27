@@ -82,6 +82,7 @@ export default async function OfficeInboxPage({
       </div>
 
       <form className="flex gap-2">
+        {statusFilter ? <input type="hidden" name="durum" value={statusFilter} /> : null}
         <input
           name="q"
           defaultValue={q}

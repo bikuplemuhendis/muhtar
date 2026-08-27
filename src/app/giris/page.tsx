@@ -15,8 +15,8 @@ export default async function LoginPage({
   const next = typeof params.next === "string" ? params.next : "";
   const demo = typeof params.demo === "string" ? params.demo : "";
   const filled =
-    demo === "muhtar" || demo === "vatandas"
-      ? DEMO_CREDENTIALS[demo]
+    demo in DEMO_CREDENTIALS
+      ? DEMO_CREDENTIALS[demo as keyof typeof DEMO_CREDENTIALS]
       : { email: "", password: "" };
 
   return (

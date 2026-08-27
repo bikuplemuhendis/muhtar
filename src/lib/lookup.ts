@@ -82,6 +82,7 @@ export async function citizenDocuments(tcHash: string) {
       typeLabel: DOCUMENT_TYPE_LABELS[doc.type as DocumentType] ?? doc.title,
       receivedAt: doc.receivedAt,
       deliveredAt: doc.deliveredAt,
+      notifiedAt: doc.notifiedAt,
       office: toOfficeInfo(doc.tenant),
     }));
 }

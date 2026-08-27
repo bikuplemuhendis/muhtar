@@ -1,8 +1,9 @@
 "use client";
 
+import { useActionState } from "react";
 import { changeStatusAction } from "@/actions/documents";
 import { canTransition, STATUSES, type DocumentStatus } from "@/lib/constants";
-import { SubmitButton } from "@/components/form-ui";
+import { ErrorText, SubmitButton } from "@/components/form-ui";
 
 export function StatusActions({
   documentId,
@@ -11,21 +12,21 @@ export function StatusActions({
   documentId: string;
   status: DocumentStatus;
 }) {
+  const [state, action] = useActionState(changeStatusAction, null);
   const ready = canTransition(status, STATUSES.READY);
   const delivered = canTransition(status, STATUSES.DELIVERED);
   const returned = canTransition(status, STATUSES.RETURNED);
   const back = canTransition(status, STATUSES.RECEIVED);
 
   if (!ready && !delivered && !returned && !back) {
-    return (
-      <p className="text-sm text-ink-soft">Bu evrak için başka durum adımı yok.</p>
-    );
+    return <p className="text-sm text-ink-soft">Bu evrak için başka durum adımı yok.</p>;
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 no-print">
+      <ErrorText message={state?.error} />
       {ready ? (
-        <form action={changeStatusAction}>
+        <form action={action}>
           <input type="hidden" name="documentId" value={documentId} />
           <input type="hidden" name="status" value={STATUSES.READY} />
           <label className="mb-2 flex items-center gap-2 text-sm">
@@ -36,7 +37,7 @@ export function StatusActions({
         </form>
       ) : null}
       {delivered ? (
-        <form action={changeStatusAction} className="space-y-2">
+        <form action={action} className="space-y-2">
           <input type="hidden" name="documentId" value={documentId} />
           <input type="hidden" name="status" value={STATUSES.DELIVERED} />
           <label className="flex items-start gap-2 rounded-2xl border border-line bg-white px-3 py-3 text-sm">
@@ -53,14 +54,14 @@ export function StatusActions({
       ) : null}
       <div className="grid grid-cols-2 gap-2">
         {back ? (
-          <form action={changeStatusAction}>
+          <form action={action}>
             <input type="hidden" name="documentId" value={documentId} />
             <input type="hidden" name="status" value={STATUSES.RECEIVED} />
             <SubmitButton variant="ghost">Alındıya al</SubmitButton>
           </form>
         ) : null}
         {returned ? (
-          <form action={changeStatusAction}>
+          <form action={action}>
             <input type="hidden" name="documentId" value={documentId} />
             <input type="hidden" name="status" value={STATUSES.RETURNED} />
             <SubmitButton variant="ghost">İade</SubmitButton>
