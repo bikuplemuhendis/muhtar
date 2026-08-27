@@ -2,16 +2,23 @@ import Link from "next/link";
 import { LoginForm } from "@/components/auth-forms";
 import { BrandMark } from "@/components/brand";
 import { DemoAccounts } from "@/components/demo-accounts";
+import { DEMO_CREDENTIALS } from "@/lib/constants";
 
 export const metadata = { title: "Giriş" };
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string | string[] }>;
+  searchParams: Promise<{ next?: string | string[]; demo?: string | string[] }>;
 }) {
   const params = await searchParams;
   const next = typeof params.next === "string" ? params.next : "";
+  const demo = typeof params.demo === "string" ? params.demo : "";
+  const filled =
+    demo === "muhtar" || demo === "vatandas"
+      ? DEMO_CREDENTIALS[demo]
+      : { email: "", password: "" };
+
   return (
     <div className="grid min-h-dvh lg:grid-cols-2">
       <aside className="relative hidden overflow-hidden bg-night p-10 text-cream lg:flex lg:flex-col">
@@ -28,7 +35,7 @@ export default async function LoginPage({
           </p>
         </div>
         <div className="relative mt-auto">
-          <DemoAccounts />
+          <DemoAccounts next={next} />
         </div>
       </aside>
       <main className="flex flex-col justify-center bg-cream px-4 py-12">
@@ -39,10 +46,10 @@ export default async function LoginPage({
           <h2 className="display mt-8 text-3xl font-semibold">Giriş</h2>
           <p className="mt-2 text-ink-soft">Vatandaş veya muhtarlık personeli.</p>
           <div className="mt-6">
-            <LoginForm next={next} />
+            <LoginForm next={next} email={filled.email} password={filled.password} />
           </div>
           <div className="mt-6 lg:hidden">
-            <DemoAccounts tone="light" />
+            <DemoAccounts tone="light" next={next} />
           </div>
           <p className="mt-6 text-sm">
             Hesabınız yok mu?{" "}

@@ -7,6 +7,11 @@ export const RETENTION_MONTHS_AFTER_DELIVERY = 24;
 export const SESSION_COOKIE = "teslim_session";
 export const SESSION_DAYS = 12;
 
+export const DEMO_CREDENTIALS = {
+  muhtar: { email: "muhtar@caddebostan.ornek", password: "Teslim123!" },
+  vatandas: { email: "ahmet@ornek.com", password: "Teslim123!" },
+} as const;
+
 export const ROLES = {
   CITIZEN: "CITIZEN",
   MUHTAR: "MUHTAR",

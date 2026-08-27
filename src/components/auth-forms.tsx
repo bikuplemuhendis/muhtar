@@ -4,18 +4,37 @@ import { useActionState } from "react";
 import { loginAction, registerCitizenAction, registerTenantAction } from "@/actions/auth";
 import { ErrorText, Field, SubmitButton } from "@/components/form-ui";
 
-export function LoginForm({ next = "" }: { next?: string }) {
+export function LoginForm({
+  next = "",
+  email = "",
+  password = "",
+}: {
+  next?: string;
+  email?: string;
+  password?: string;
+}) {
   const [state, action] = useActionState(loginAction, null);
   return (
-    <form action={action} className="space-y-3">
+    <form action={action} className="space-y-3" key={`${email}-${password}`}>
       <input type="hidden" name="next" value={next} />
-      <Field label="E-posta" name="email" type="email" autoComplete="username" required autoFocus />
       <Field
+        id="login-email"
+        label="E-posta"
+        name="email"
+        type="email"
+        autoComplete="username"
+        required
+        autoFocus
+        defaultValue={email}
+      />
+      <Field
+        id="login-password"
         label="Parola"
         name="password"
         type="password"
         autoComplete="current-password"
         required
+        defaultValue={password}
       />
       <ErrorText message={state?.error} />
       <SubmitButton>Giriş yap</SubmitButton>

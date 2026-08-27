@@ -45,6 +45,7 @@ export function Field({
   autoFocus,
   maxLength,
   hint,
+  id,
 }: {
   label: string;
   name: string;
@@ -57,14 +58,17 @@ export function Field({
   autoFocus?: boolean;
   maxLength?: number;
   hint?: string;
+  id?: string;
 }) {
   const [hidden, setHidden] = useState(true);
   const isPassword = type === "password";
+  const inputId = id ?? name;
   return (
-    <label className="block">
+    <label className="block" htmlFor={inputId}>
       <span className="mb-1.5 block text-sm font-semibold text-ink">{label}</span>
       <span className="relative block">
         <input
+          id={inputId}
           name={name}
           type={isPassword && !hidden ? "text" : type}
           autoComplete={autoComplete}
