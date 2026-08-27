@@ -65,7 +65,7 @@ export function NewDocumentForm() {
         Sistem evrak görüntüsü veya tarama saklamaz. Yalnızca teslim kaydı oluşturulur.
       </p>
       <ErrorText message={state?.error} />
-      <div className="sticky bottom-20">
+      <div className="sticky bottom-24 pb-2">
         <SubmitButton>Kaydet ve kod üret</SubmitButton>
       </div>
     </form>

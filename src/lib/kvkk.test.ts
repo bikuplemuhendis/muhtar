@@ -3,7 +3,7 @@ import { assertNoPiiInPublicLookup, maskName, maskTcLast4, toPublicLookup } from
 
 describe("KVKK maskeleme", () => {
   it("T.C. son 4 haneyi maskeler", () => {
-    expect(maskTcLast4("0146")).toBe("•••• •••• ••01 46");
+    expect(maskTcLast4("0146")).toBe("•••••••0146");
     expect(maskTcLast4("0146")).not.toContain("10000000146");
   });
 

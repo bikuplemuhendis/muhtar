@@ -3,8 +3,8 @@ import { STATUS_HINTS, STATUS_LABELS } from "@/lib/constants";
 
 export function maskTcLast4(last4: string): string {
   const digits = last4.replace(/\D/g, "").slice(-4);
-  if (digits.length !== 4) return "•••• •••• ••••";
-  return `•••• •••• ••${digits.slice(0, 2)} ${digits.slice(2)}`;
+  if (digits.length !== 4) return "•••••••••••";
+  return `•••••••${digits}`;
 }
 
 export function maskName(fullName: string): string {
