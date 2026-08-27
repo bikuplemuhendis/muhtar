@@ -4,13 +4,15 @@ import { useActionState } from "react";
 import { publicLookupAction } from "@/actions/lookup";
 import { ErrorText, Field, SubmitButton } from "@/components/form-ui";
 import { OfficeCard } from "@/components/office-card";
-import { StatusBadge } from "@/components/status-badge";
+import { StatusTimeline } from "@/components/status-timeline";
+import { TrackingSlip } from "@/components/tracking-slip";
+import { STATUSES } from "@/lib/constants";
 
 export function LookupForm() {
   const [state, action] = useActionState(publicLookupAction, null);
   return (
     <div className="space-y-4">
-      <form action={action} className="paper-card space-y-3 rounded-3xl p-4">
+      <form action={action} className="space-y-3 rounded-[28px] border border-white/10 bg-cream p-4 text-ink">
         <Field
           label="Takip kodu"
           name="trackingCode"
@@ -34,26 +36,21 @@ export function LookupForm() {
       </form>
 
       {state?.result ? (
-        <div className="space-y-3">
-          <section className="paper-card rounded-3xl p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-ink-soft">
-                  Teslim durumu
-                </p>
-                <p className="display mt-1 text-2xl font-semibold">{state.result.trackingCode}</p>
-                <p className="mt-1 text-sm text-ink-soft">{state.result.typeLabel}</p>
-              </div>
-              <StatusBadge status={state.result.status} />
-            </div>
-            <p className="mt-4 rounded-2xl bg-sand px-3 py-3 text-sm leading-6">
-              {state.result.statusHint}
-            </p>
-            <p className="mt-3 text-xs text-ink-soft">
-              Evrak içeriği, gönderen kurum ve ad soyad bu sorguda gösterilmez.
-            </p>
+        <div className="space-y-3 text-ink">
+          <TrackingSlip
+            trackingCode={state.result.trackingCode}
+            status={state.result.status}
+            typeLabel={state.result.typeLabel}
+            office={state.result.office}
+            rotate={false}
+          />
+          <section className="rounded-[28px] bg-cream p-4">
+            <StatusTimeline
+              status={state.result.status}
+              returned={state.result.status === STATUSES.RETURNED}
+            />
           </section>
-          <OfficeCard office={state.result.office} />
+          <OfficeCard office={state.result.office} highlight />
         </div>
       ) : null}
     </div>

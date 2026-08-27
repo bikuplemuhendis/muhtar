@@ -18,7 +18,7 @@ export function KvkkAccountTools() {
         <SubmitButton variant="ghost">Verilerimi indir (JSON)</SubmitButton>
       </form>
       {json ? (
-        <pre className="max-h-64 overflow-auto rounded-2xl bg-ink px-3 py-3 text-xs text-paper">
+        <pre className="max-h-64 overflow-auto rounded-2xl bg-night px-3 py-3 text-xs text-cream">
           {json}
         </pre>
       ) : null}

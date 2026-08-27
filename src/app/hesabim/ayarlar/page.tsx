@@ -8,8 +8,8 @@ export default async function CitizenSettingsPage() {
   const ctx = await requireCitizen();
   return (
     <div className="space-y-4">
-      <h1 className="display text-2xl font-semibold">Hesap</h1>
-      <section className="paper-card space-y-1 rounded-3xl p-4 text-sm leading-6">
+      <h1 className="display text-3xl font-semibold">Hesap</h1>
+      <section className="paper-card space-y-1 rounded-[28px] p-5 text-sm leading-6">
         <p>
           <span className="text-ink-soft">Ad:</span> {ctx.user.fullName}
         </p>
@@ -17,15 +17,16 @@ export default async function CitizenSettingsPage() {
           <span className="text-ink-soft">E-posta:</span> {ctx.user.email}
         </p>
         <p>
-          <span className="text-ink-soft">T.C.:</span>{" "}
-          {maskTcLast4(ctx.user.tcLast4 ?? "")}
+          <span className="text-ink-soft">T.C.:</span> {maskTcLast4(ctx.user.tcLast4 ?? "")}
         </p>
         <p>
           <span className="text-ink-soft">KVKK onayı:</span>{" "}
           {ctx.user.kvkkConsentAt?.toLocaleString("tr-TR")}
         </p>
       </section>
-      <KvkkAccountTools />
+      <div className="paper-card rounded-[28px] p-4">
+        <KvkkAccountTools />
+      </div>
     </div>
   );
 }

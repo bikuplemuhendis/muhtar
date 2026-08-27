@@ -7,9 +7,11 @@ export default function NewDocumentPage() {
     <div className="space-y-4">
       <h1 className="display text-3xl font-semibold">Yeni evrak</h1>
       <p className="text-sm leading-6 text-ink-soft">
-        Zarfı elinizde tutun, üç alanı doldurun. Tarama yok — içerik sisteme girmez.
+        Zarfı elinizde tutun. Üç alan, bir kod. İçerik sisteme girmez.
       </p>
-      <NewDocumentForm />
+      <div className="paper-card rounded-[28px] p-4">
+        <NewDocumentForm />
+      </div>
     </div>
   );
 }

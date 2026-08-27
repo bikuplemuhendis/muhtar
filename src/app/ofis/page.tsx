@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { Avatar } from "@/components/avatar";
+import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { requireOffice } from "@/lib/auth";
 import { STATUSES, STATUS_LABELS, type DocumentStatus } from "@/lib/constants";
 import { officeDocumentView } from "@/lib/documents";
+import { formatRelativeTr, startOfDay } from "@/lib/format";
 import { maskTcLast4 } from "@/lib/kvkk";
 import { prisma } from "@/lib/prisma";
 
@@ -23,29 +26,38 @@ export default async function OfficeInboxPage({
     : undefined;
   const last4 = q.replace(/\D/g, "").slice(-4);
 
-  const docs = await prisma.document.findMany({
-    where: {
-      tenantId: ctx.tenant.id,
-      ...(statusFilter ? { status: statusFilter } : {}),
-      ...(q
-        ? {
-            OR: [
-              { trackingCode: { contains: q.toUpperCase() } },
-              { recipientName: { contains: q } },
-              last4.length === 4 ? { recipientTcLast4: last4 } : undefined,
-            ].filter(Boolean) as object[],
-          }
-        : {}),
-    },
-    orderBy: { receivedAt: "desc" },
-    take: 80,
-  });
+  const [docs, counts, deliveredToday] = await Promise.all([
+    prisma.document.findMany({
+      where: {
+        tenantId: ctx.tenant.id,
+        ...(statusFilter ? { status: statusFilter } : {}),
+        ...(q
+          ? {
+              OR: [
+                { trackingCode: { contains: q.toUpperCase() } },
+                { recipientName: { contains: q } },
+                last4.length === 4 ? { recipientTcLast4: last4 } : undefined,
+              ].filter(Boolean) as object[],
+            }
+          : {}),
+      },
+      orderBy: { receivedAt: "desc" },
+      take: 80,
+    }),
+    prisma.document.groupBy({
+      by: ["status"],
+      where: { tenantId: ctx.tenant.id },
+      _count: true,
+    }),
+    prisma.document.count({
+      where: {
+        tenantId: ctx.tenant.id,
+        status: STATUSES.DELIVERED,
+        deliveredAt: { gte: startOfDay() },
+      },
+    }),
+  ]);
 
-  const counts = await prisma.document.groupBy({
-    by: ["status"],
-    where: { tenantId: ctx.tenant.id },
-    _count: true,
-  });
   const countMap = Object.fromEntries(counts.map((row) => [row.status, row._count]));
 
   return (
@@ -53,30 +65,36 @@ export default async function OfficeInboxPage({
       <div className="flex items-end justify-between gap-3">
         <div>
           <h1 className="display text-3xl font-semibold">Evraklar</h1>
-          <p className="text-sm text-ink-soft">{docs.length} kayıt</p>
+          <p className="text-sm text-ink-soft">Bugün {deliveredToday} teslim</p>
         </div>
         <Link
           href="/ofis/yeni"
-          className="inline-flex min-h-11 items-center rounded-2xl bg-stamp px-4 text-sm font-semibold text-white"
+          className="inline-flex min-h-11 items-center rounded-2xl bg-stamp px-4 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(226,59,43,0.25)]"
         >
           Yeni
         </Link>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <Stat label="Bekleyen" value={countMap[STATUSES.RECEIVED] ?? 0} />
+        <Stat label="Hazır" value={countMap[STATUSES.READY] ?? 0} accent />
+        <Stat label="Teslim" value={countMap[STATUSES.DELIVERED] ?? 0} />
       </div>
 
       <form className="flex gap-2">
         <input
           name="q"
           defaultValue={q}
-          placeholder="Ad, takip kodu veya son 4 hane"
-          className="min-h-12 flex-1 rounded-2xl border border-line bg-white px-4 text-base outline-none focus:ring-2 focus:ring-stamp/30"
+          placeholder="Ad, kod veya son 4 hane"
+          className="min-h-12 flex-1 rounded-2xl border border-line bg-white px-4 text-base outline-none focus:ring-4 focus:ring-stamp/20"
         />
-        <button className="min-h-12 rounded-2xl bg-ink px-4 font-semibold text-paper" type="submit">
+        <button className="min-h-12 rounded-2xl bg-night px-4 font-semibold text-cream" type="submit">
           Ara
         </button>
       </form>
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        <FilterChip href="/ofis" active={!statusFilter} label={`Tümü`} />
+      <div className="scroll-thin flex gap-2 overflow-x-auto pb-1">
+        <FilterChip href="/ofis" active={!statusFilter} label="Tümü" />
         {Object.values(STATUSES).map((status) => (
           <FilterChip
             key={status}
@@ -87,32 +105,49 @@ export default async function OfficeInboxPage({
         ))}
       </div>
 
-      <ul className="space-y-2">
-        {docs.map((raw) => {
-          const doc = officeDocumentView(raw);
-          return (
-            <li key={doc.id}>
-              <Link
-                href={`/ofis/evrak/${doc.id}`}
-                className="paper-card flex min-h-20 items-center justify-between gap-3 rounded-3xl px-4 py-3"
-              >
-                <div>
-                  <p className="font-semibold">{doc.recipientName}</p>
-                  <p className="text-sm text-ink-soft">
-                    {maskTcLast4(doc.recipientTcLast4)} · {doc.trackingCode}
-                  </p>
-                </div>
-                <StatusBadge status={doc.status} />
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
       {docs.length === 0 ? (
-        <p className="rounded-3xl bg-sand px-4 py-6 text-center text-sm text-ink-soft">
-          Bu filtrede evrak yok. Yeni kayıt için alıcı adı ve T.C. no yeter.
-        </p>
-      ) : null}
+        <EmptyState
+          title="Kuyruk boş"
+          body="Bu filtrede evrak yok. Yeni kayıt için alıcı adı ve T.C. no yeter."
+          href="/ofis/yeni"
+          action="Evrak kaydet"
+        />
+      ) : (
+        <ul className="space-y-2">
+          {docs.map((raw) => {
+            const doc = officeDocumentView(raw);
+            return (
+              <li key={doc.id}>
+                <Link
+                  href={`/ofis/evrak/${doc.id}`}
+                  className="paper-card lift flex min-h-[4.5rem] items-center gap-3 rounded-[24px] px-3 py-3"
+                >
+                  <Avatar name={doc.recipientName} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold">{doc.recipientName}</p>
+                    <p className="truncate text-sm text-ink-soft">
+                      {maskTcLast4(doc.recipientTcLast4)} · {doc.trackingCode}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <StatusBadge status={doc.status} />
+                    <span className="text-[11px] text-ink-soft">{formatRelativeTr(doc.receivedAt)}</span>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function Stat({ label, value, accent = false }: { label: string; value: number; accent?: boolean }) {
+  return (
+    <div className={`rounded-[22px] px-3 py-3 ${accent ? "bg-stamp text-white" : "bg-night text-cream"}`}>
+      <p className="display text-2xl font-semibold">{value}</p>
+      <p className="text-[11px] uppercase tracking-wider opacity-70">{label}</p>
     </div>
   );
 }
@@ -130,7 +165,7 @@ function FilterChip({
     <Link
       href={href}
       className={`inline-flex min-h-10 shrink-0 items-center rounded-full px-3 text-sm font-semibold ${
-        active ? "bg-ink text-paper" : "bg-sand text-ink"
+        active ? "bg-night text-cream" : "bg-white text-ink"
       }`}
     >
       {label}

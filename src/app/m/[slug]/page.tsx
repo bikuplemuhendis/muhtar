@@ -17,18 +17,18 @@ export default async function PublicOfficePage({
   const office = toOfficeInfo(tenant);
 
   return (
-    <>
-      <main className="mx-auto w-full max-w-md px-4 py-10">
-        <BrandMark />
+    <div className="flex min-h-dvh flex-col bg-night text-cream">
+      <div className="hero-glow pointer-events-none absolute inset-x-0 top-0 h-80" />
+      <main className="relative mx-auto w-full max-w-md px-4 py-10">
+        <BrandMark tone="dark" />
         <div className="mt-8">
-          <OfficeCard office={office} />
+          <OfficeCard office={office} highlight />
         </div>
-        <p className="mt-4 text-sm leading-6 text-ink-soft">
-          Bu sayfa muhtarlığın kamu iletişim bilgileridir. Burada kişiye ait evrak listesi
-          yayımlanmaz.
+        <p className="mt-4 text-sm leading-6 text-cream/60">
+          Bu sayfa muhtarlığın kamu iletişim bilgileridir. Kişiye ait evrak listesi yayımlanmaz.
         </p>
       </main>
-      <SiteFooter />
-    </>
+      <SiteFooter tone="dark" />
+    </div>
   );
 }

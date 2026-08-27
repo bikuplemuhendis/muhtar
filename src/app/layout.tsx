@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Source_Sans_3 } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 
-const sourceSans = Source_Sans_3({
-  variable: "--font-source",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin", "latin-ext"],
   display: "swap",
 });
@@ -26,8 +26,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#f3eee4",
+  themeColor: "#07111f",
 };
 
 export default function RootLayout({
@@ -38,9 +37,9 @@ export default function RootLayout({
   return (
     <html
       lang="tr"
-      className={`${sourceSans.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${manrope.variable} ${fraunces.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col text-ink">{children}</body>
+      <body className="flex min-h-full flex-col text-ink">{children}</body>
     </html>
   );
 }

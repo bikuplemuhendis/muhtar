@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CopyButton } from "@/components/copy-button";
 import { StatusActions } from "@/components/status-actions";
-import { StatusBadge } from "@/components/status-badge";
+import { StatusTimeline } from "@/components/status-timeline";
+import { TrackingSlip } from "@/components/tracking-slip";
 import { requireOffice } from "@/lib/auth";
+import { STATUSES } from "@/lib/constants";
 import { officeDocumentView } from "@/lib/documents";
 import { maskTcLast4 } from "@/lib/kvkk";
 import { prisma } from "@/lib/prisma";
+import { toOfficeInfo } from "@/lib/lookup";
 
 export const dynamic = "force-dynamic";
 
@@ -27,23 +31,33 @@ export default async function DocumentDetailPage({
   });
   if (!raw) notFound();
   const doc = officeDocumentView(raw);
+  const office = toOfficeInfo(ctx.tenant);
 
   return (
     <div className="space-y-4">
       {created ? (
-        <p className="rounded-2xl bg-sage/15 px-3 py-2 text-sm font-semibold text-sage-dark">
+        <p className="rounded-2xl bg-sage px-4 py-3 text-sm font-semibold text-white">
           Kayıt alındı. Takip kodunu vatandaşa verin.
         </p>
       ) : null}
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-ink-soft">Takip kodu</p>
-          <h1 className="display text-3xl font-semibold">{doc.trackingCode}</h1>
-        </div>
-        <StatusBadge status={doc.status} />
+
+      <TrackingSlip
+        trackingCode={doc.trackingCode}
+        status={doc.status}
+        typeLabel={doc.typeLabel}
+        office={office}
+        rotate={false}
+      />
+
+      <div className="flex gap-2">
+        <CopyButton value={doc.trackingCode} label="Kodu kopyala" />
+        <CopyButton
+          value={`${doc.trackingCode} — ${ctx.tenant.name} ${ctx.tenant.phone}`}
+          label="Fiş metni"
+        />
       </div>
 
-      <section className="paper-card rounded-3xl p-4">
+      <section className="paper-card rounded-[28px] p-4">
         <p className="text-lg font-semibold">{doc.recipientName}</p>
         <p className="text-sm text-ink-soft">{maskTcLast4(doc.recipientTcLast4)}</p>
         <p className="mt-3 text-sm">
@@ -53,18 +67,8 @@ export default async function DocumentDetailPage({
         {doc.notes ? <p className="mt-2 text-sm text-ink-soft">{doc.notes}</p> : null}
       </section>
 
-      <section className="paper-card rounded-3xl p-4 print:block">
-        <p className="text-xs font-semibold uppercase tracking-wider">Vatandaşa fiş</p>
-        <p className="display mt-1 text-2xl font-semibold">{doc.trackingCode}</p>
-        <p className="mt-2 text-sm leading-6">
-          {ctx.tenant.name}
-          <br />
-          {ctx.tenant.address}
-          <br />
-          Tel: {ctx.tenant.phone}
-          <br />
-          teslim.app/sorgula
-        </p>
+      <section className="paper-card rounded-[28px] p-4">
+        <StatusTimeline status={doc.status} returned={doc.status === STATUSES.RETURNED} />
       </section>
 
       <StatusActions documentId={doc.id} status={doc.status} />
@@ -73,12 +77,9 @@ export default async function DocumentDetailPage({
         <h2 className="text-sm font-semibold">Hareketler</h2>
         <ol className="mt-2 space-y-2 text-sm">
           {raw.events.map((event) => (
-            <li key={event.id} className="rounded-2xl bg-sand px-3 py-2">
+            <li key={event.id} className="rounded-2xl bg-white px-3 py-2">
               <span className="font-semibold">{event.action}</span>
-              <span className="text-ink-soft">
-                {" "}
-                · {event.createdAt.toLocaleString("tr-TR")}
-              </span>
+              <span className="text-ink-soft"> · {event.createdAt.toLocaleString("tr-TR")}</span>
               {event.note ? <p>{event.note}</p> : null}
             </li>
           ))}

@@ -6,15 +6,14 @@ export const metadata = { title: "Vatandaş kaydı" };
 
 export default function RegisterPage() {
   return (
-    <>
+    <div className="flex min-h-dvh flex-col bg-cream">
       <main className="mx-auto w-full max-w-md px-4 py-10">
         <BrandMark />
         <h1 className="display mt-8 text-3xl font-semibold">Üye ol</h1>
         <p className="mt-2 text-ink-soft">
-          T.C. kimlik numaranızın özeti ile size gelen evrakları ve ilgili muhtarlığın
-          telefonunu görün.
+          T.C. kimlik özetinizle size gelen evrakları ve ilgili muhtarlığın telefonunu görün.
         </p>
-        <div className="mt-6">
+        <div className="mt-6 paper-card rounded-[28px] p-4">
           <CitizenRegisterForm />
         </div>
         <p className="mt-6 text-sm">
@@ -25,6 +24,6 @@ export default function RegisterPage() {
         </p>
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

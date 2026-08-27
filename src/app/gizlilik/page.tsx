@@ -4,7 +4,7 @@ export const metadata = { title: "Gizlilik" };
 
 export default function PrivacyPage() {
   return (
-    <>
+    <div className="flex min-h-dvh flex-col bg-cream">
       <main className="mx-auto w-full max-w-2xl px-4 py-10">
         <BrandMark />
         <h1 className="display mt-8 text-3xl font-semibold">Gizlilik</h1>
@@ -25,6 +25,6 @@ export default function PrivacyPage() {
         </div>
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

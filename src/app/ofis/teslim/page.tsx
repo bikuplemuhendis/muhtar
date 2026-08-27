@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { EmptyState } from "@/components/empty-state";
 import { StatusActions } from "@/components/status-actions";
 import { StatusBadge } from "@/components/status-badge";
+import { Avatar } from "@/components/avatar";
 import { requireOffice } from "@/lib/auth";
 import { STATUSES, type DocumentStatus } from "@/lib/constants";
 import { officeDocumentView } from "@/lib/documents";
@@ -52,37 +54,39 @@ export default async function QuickDeliverPage({
           defaultValue={q}
           autoFocus
           placeholder="Ad / kod / son 4"
-          className="min-h-12 flex-1 rounded-2xl border border-line bg-white px-4 text-base outline-none focus:ring-2 focus:ring-stamp/30"
+          className="min-h-12 flex-1 rounded-2xl border border-line bg-white px-4 text-base outline-none focus:ring-4 focus:ring-stamp/20"
         />
-        <button className="min-h-12 rounded-2xl bg-ink px-4 font-semibold text-paper" type="submit">
+        <button className="min-h-12 rounded-2xl bg-night px-4 font-semibold text-cream" type="submit">
           Bul
         </button>
       </form>
-      <ul className="space-y-3">
-        {docs.map((raw) => {
-          const doc = officeDocumentView(raw);
-          return (
-            <li key={doc.id} className="paper-card space-y-3 rounded-3xl p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold">{doc.recipientName}</p>
-                  <p className="text-sm text-ink-soft">
-                    {maskTcLast4(doc.recipientTcLast4)} · {doc.trackingCode}
-                  </p>
-                </div>
-                <StatusBadge status={doc.status as DocumentStatus} />
-              </div>
-              <StatusActions documentId={doc.id} status={doc.status} />
-              <Link href={`/ofis/evrak/${doc.id}`} className="block text-sm font-semibold text-stamp">
-                Ayrıntı
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
       {docs.length === 0 ? (
-        <p className="rounded-3xl bg-sand px-4 py-6 text-center text-sm">Bekleyen evrak yok.</p>
-      ) : null}
+        <EmptyState title="Sırada kimse yok" body="Bekleyen evrak kalmadı." />
+      ) : (
+        <ul className="space-y-3">
+          {docs.map((raw) => {
+            const doc = officeDocumentView(raw);
+            return (
+              <li key={doc.id} className="paper-card space-y-3 rounded-[28px] p-4">
+                <div className="flex items-start gap-3">
+                  <Avatar name={doc.recipientName} />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">{doc.recipientName}</p>
+                    <p className="text-sm text-ink-soft">
+                      {maskTcLast4(doc.recipientTcLast4)} · {doc.trackingCode}
+                    </p>
+                  </div>
+                  <StatusBadge status={doc.status as DocumentStatus} />
+                </div>
+                <StatusActions documentId={doc.id} status={doc.status} />
+                <Link href={`/ofis/evrak/${doc.id}`} className="block text-sm font-semibold text-stamp">
+                  Ayrıntı
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

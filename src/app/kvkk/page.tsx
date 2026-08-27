@@ -5,7 +5,7 @@ export const metadata = { title: "KVKK aydınlatma" };
 
 export default function KvkkPage() {
   return (
-    <>
+    <div className="flex min-h-dvh flex-col bg-cream">
       <main className="mx-auto w-full max-w-2xl px-4 py-10">
         <BrandMark />
         <h1 className="display mt-8 text-3xl font-semibold">KVKK aydınlatma metni</h1>
@@ -40,6 +40,6 @@ export default function KvkkPage() {
         </div>
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

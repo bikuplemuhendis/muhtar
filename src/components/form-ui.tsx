@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { useState } from "react";
 
 export function SubmitButton({
   children,
@@ -8,7 +9,7 @@ export function SubmitButton({
   className = "",
 }: {
   children: React.ReactNode;
-  variant?: "stamp" | "sage" | "ghost";
+  variant?: "stamp" | "sage" | "ghost" | "night";
   className?: string;
 }) {
   const { pending } = useFormStatus();
@@ -16,14 +17,16 @@ export function SubmitButton({
     variant === "sage"
       ? "bg-sage text-white hover:bg-sage-dark"
       : variant === "ghost"
-        ? "bg-transparent text-ink border border-line hover:bg-sand"
-        : "bg-stamp text-white hover:bg-stamp-dark";
+        ? "bg-white text-ink border border-line hover:bg-cream-2"
+        : variant === "night"
+          ? "bg-night text-cream hover:bg-night-2"
+          : "bg-stamp text-white hover:bg-stamp-dark shadow-[0_10px_24px_rgba(226,59,43,0.28)]";
 
   return (
     <button
       type="submit"
       disabled={pending}
-      className={`inline-flex min-h-12 w-full items-center justify-center rounded-2xl px-4 text-base font-semibold transition disabled:opacity-60 ${styles} ${className}`}
+      className={`btn-press inline-flex min-h-12 w-full items-center justify-center rounded-2xl px-4 text-base font-semibold transition disabled:opacity-60 ${styles} ${className}`}
     >
       {pending ? "İşleniyor…" : children}
     </button>
@@ -55,21 +58,34 @@ export function Field({
   maxLength?: number;
   hint?: string;
 }) {
+  const [hidden, setHidden] = useState(true);
+  const isPassword = type === "password";
   return (
     <label className="block">
       <span className="mb-1.5 block text-sm font-semibold text-ink">{label}</span>
-      <input
-        name={name}
-        type={type}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        required={required}
-        defaultValue={defaultValue}
-        placeholder={placeholder}
-        autoFocus={autoFocus}
-        maxLength={maxLength}
-        className="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink outline-none ring-stamp/30 placeholder:text-ink-soft/70 focus:ring-2"
-      />
+      <span className="relative block">
+        <input
+          name={name}
+          type={isPassword && !hidden ? "text" : type}
+          autoComplete={autoComplete}
+          inputMode={inputMode}
+          required={required}
+          defaultValue={defaultValue}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          maxLength={maxLength}
+          className="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink outline-none ring-stamp/25 placeholder:text-ink-soft/70 focus:border-stamp/40 focus:ring-4"
+        />
+        {isPassword ? (
+          <button
+            type="button"
+            className="absolute inset-y-0 right-2 my-auto h-9 rounded-full px-3 text-xs font-semibold text-ink-soft"
+            onClick={() => setHidden((v) => !v)}
+          >
+            {hidden ? "Göster" : "Gizle"}
+          </button>
+        ) : null}
+      </span>
       {hint ? <span className="mt-1 block text-xs text-ink-soft">{hint}</span> : null}
     </label>
   );
@@ -78,7 +94,7 @@ export function Field({
 export function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="rounded-xl border border-stamp/30 bg-stamp/10 px-3 py-2 text-sm text-stamp-dark">
+    <p className="rounded-2xl border border-stamp/20 bg-stamp/10 px-3 py-2 text-sm text-stamp-dark">
       {message}
     </p>
   );
@@ -87,7 +103,7 @@ export function ErrorText({ message }: { message?: string }) {
 export function OkText({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="rounded-xl border border-sage/30 bg-sage/10 px-3 py-2 text-sm text-sage-dark">
+    <p className="rounded-2xl border border-sage/20 bg-sage/10 px-3 py-2 text-sm text-sage-dark">
       {message}
     </p>
   );

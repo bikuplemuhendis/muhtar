@@ -26,13 +26,15 @@ export default async function OfficeSettingsPage() {
         sayfasında görünür.
       </p>
       {owner ? (
-        <OfficeSettingsForm
-          address={ctx.tenant.address}
-          phone={ctx.tenant.phone}
-          hours={ctx.tenant.hours}
-          muhtarName={ctx.tenant.muhtarName}
-          email={ctx.tenant.email ?? ""}
-        />
+        <div className="paper-card rounded-[28px] p-4">
+          <OfficeSettingsForm
+            address={ctx.tenant.address}
+            phone={ctx.tenant.phone}
+            hours={ctx.tenant.hours}
+            muhtarName={ctx.tenant.muhtarName}
+            email={ctx.tenant.email ?? ""}
+          />
+        </div>
       ) : (
         <section className="paper-card rounded-3xl p-4 text-sm leading-6">
           <p>{ctx.tenant.address}</p>
@@ -51,7 +53,11 @@ export default async function OfficeSettingsPage() {
             </li>
           ))}
         </ul>
-        {owner ? <AddStaffForm /> : null}
+        {owner ? (
+          <div className="paper-card rounded-[28px] p-4">
+            <AddStaffForm />
+          </div>
+        ) : null}
       </section>
       <Link href="/ofis/denetim" className="inline-flex min-h-11 items-center font-semibold text-stamp">
         Denetim kaydı

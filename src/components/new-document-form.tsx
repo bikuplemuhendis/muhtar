@@ -32,7 +32,7 @@ export function NewDocumentForm() {
           {Object.entries(DOCUMENT_TYPE_LABELS).map(([value, label], index) => (
             <label
               key={value}
-              className="flex min-h-12 items-center gap-2 rounded-2xl border border-line bg-white px-3 text-sm font-medium"
+              className="flex min-h-12 items-center gap-2 rounded-2xl border border-line bg-white px-3 text-sm font-medium has-[:checked]:border-stamp has-[:checked]:bg-stamp/10"
             >
               <input
                 type="radio"
