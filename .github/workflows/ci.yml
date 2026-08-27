@@ -1,0 +1,26 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: file:./dev.db
+      AUTH_SECRET: ci-auth-secret-do-not-use-in-prod-32xx
+      KVKK_PEPPER: ci-kvkk-pepper-do-not-use-in-prod-32xx
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma db push
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build

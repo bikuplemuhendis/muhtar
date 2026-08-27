@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  neighborhood String
+  district     String
+  city         String
+  address      String
+  phone        String
+  email        String?
+  hours        String   @default("Hafta içi 09:00–17:00")
+  muhtarName   String
+  kvkkContact  String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  members   TenantMember[]
+  documents Document[]
+  auditLogs AuditLog[]
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  fullName      String
+  phone         String?
+  role          String
+  tcHash        String?   @unique
+  tcLast4       String?
+  kvkkConsentAt DateTime?
+  kvkkPurpose   String?
+  anonymizedAt  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships TenantMember[]
+  consents    Consent[]
+  auditLogs   AuditLog[]
+  notices     InboxNotice[]
+}
+
+model TenantMember {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String
+  role      String
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+}
+
+model Document {
+  id               String    @id @default(cuid())
+  tenantId         String
+  trackingCode     String    @unique
+  type             String
+  title            String
+  sourceOrg        String?
+  notes            String?
+  recipientName    String
+  recipientTcHash  String
+  recipientTcLast4 String
+  status           String
+  receivedAt       DateTime  @default(now())
+  readyAt          DateTime?
+  notifiedAt       DateTime?
+  deliveredAt      DateTime?
+  deliveredById    String?
+  identityChecked  Boolean   @default(false)
+  retainUntil      DateTime?
+  anonymizedAt     DateTime?
+  createdById      String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  events DocumentEvent[]
+  notices InboxNotice[]
+
+  @@index([tenantId, status])
+  @@index([recipientTcHash])
+  @@index([tenantId, recipientTcLast4])
+}
+
+model DocumentEvent {
+  id         String   @id @default(cuid())
+  documentId String
+  actorId    String?
+  action     String
+  note       String?
+  createdAt  DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+}
+
+model InboxNotice {
+  id         String    @id @default(cuid())
+  userId     String
+  documentId String?
+  title      String
+  body       String
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([userId, readAt])
+}
+
+model Consent {
+  id        String   @id @default(cuid())
+  userId    String
+  purpose   String
+  version   String
+  granted   Boolean
+  ip        String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  tenantId  String?
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  meta      String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  actor  User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([actorId])
+}

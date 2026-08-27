@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+:root {
+  --night: #07111f;
+  --night-2: #0e1c30;
+  --cream: #f6f1e8;
+  --cream-2: #efe6d6;
+  --ink: #102033;
+  --ink-soft: #5b6b7c;
+  --stamp: #e23b2b;
+  --stamp-dark: #be2a1d;
+  --gold: #d4a24c;
+  --sage: #1f8a56;
+  --sage-dark: #176b43;
+  --line: #e2d6c2;
+  --card: #fffcf7;
+}
+
+@theme inline {
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-cream: var(--cream);
+  --color-cream-2: var(--cream-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-stamp: var(--stamp);
+  --color-stamp-dark: var(--stamp-dark);
+  --color-gold: var(--gold);
+  --color-sage: var(--sage);
+  --color-sage-dark: var(--sage-dark);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-fraunces);
+}
+
+html {
+  background: var(--cream);
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-manrope), "Manrope", sans-serif;
+}
+
+.display {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  opacity: 0.09;
+}
+
+.hero-glow {
+  background:
+    radial-gradient(680px 380px at 12% -10%, rgba(226, 59, 43, 0.28), transparent 58%),
+    radial-gradient(640px 360px at 92% 8%, rgba(212, 162, 76, 0.22), transparent 50%),
+    radial-gradient(500px 280px at 70% 100%, rgba(31, 138, 86, 0.16), transparent 55%);
+}
+
+.paper-card {
+  background: var(--card);
+  border: 1px solid rgba(16, 32, 51, 0.08);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 10px 30px rgba(16, 32, 51, 0.06);
+}
+
+.lift {
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 16px 36px rgba(16, 32, 51, 0.1);
+}
+
+.btn-press {
+  transition: transform 120ms ease, filter 120ms ease;
+}
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+.slip {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 10px,
+      rgba(16, 32, 51, 0.04) 10px,
+      rgba(16, 32, 51, 0.04) 11px
+    ),
+    linear-gradient(180deg, #fffaf2 0%, #f4ead8 100%);
+}
+
+.perforation {
+  background-image: radial-gradient(circle, var(--night) 1.4px, transparent 1.5px);
+  background-size: 12px 8px;
+  background-position: center;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: #f7c2bb;
+}
+
+.scroll-thin::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+}
+
+@media print {
+  header,
+  nav,
+  .no-print,
+  footer {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+}
